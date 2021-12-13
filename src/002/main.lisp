@@ -17,6 +17,19 @@
                             (+ (second a) (second b))))
                          commands))
     (* (first result) (second result))))
+
+(defun main-2 (filename)
+  (let ((results nil)
+        (commands
+          (process-commands-with-aim
+           (mapcar #'parse-string-to-list
+                   (read-file-to-list filename)))))
+    (setf results (reduce (lambda (a b)
+                           (list
+                            (+ (first a) (first b))
+                            (+ (second a) (second b))))
+                         commands))
+    (* (first results) (second results))))
     
             
 
@@ -25,15 +38,35 @@
             (apply #'exec-command c))
           commands))
 
-(defun exec-command  (direction magnitude)
+(defun process-commands-with-aim (commands)
+  (let ((aim 0))
+    (mapcar (lambda (c)
+              (let ((command (append c (list aim)))
+                    (response nil))
+                (setf response (apply #'exec-command-with-aim command))
+                (setf aim (third response))
+                response))
+            commands)))
+
+(defun exec-command  (direction magnitude &optional (aim 0))
   (cond
     ((string= direction "forward")
-     (list magnitude 0))
+     (list magnitude 0 aim))
     ((string= direction "down")
-     (list 0 magnitude))
+     (list 0 magnitude (+ aim magnitude)))
     ((string= direction "up")
-     (list 0 (* -1 magnitude)))
-    (t (list 0 0))))
+     (list 0 (* -1 magnitude) (- aim magnitude)))
+    (t (list 0 0 0))))
+
+(defun exec-command-with-aim (direction magnitude aim)
+  (cond
+    ((string= direction "forward")
+     (list magnitude (* magnitude aim) aim))
+    ((string= direction "down")
+     (list 0 0 (+ aim magnitude)))
+    ((string= direction "up")
+     (list 0 0 (- aim magnitude)))
+    (t (list 0 0 0))))
 
 (defun read-file-to-list (filename)
   (with-open-file (in filename)
@@ -63,4 +96,4 @@
           (list
            (+ (first a) (first b))
            (+ (second a) (second b))))
-        '((5 0) (0 5)))
+        (process-commands-with-aim *commands*))
