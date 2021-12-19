@@ -128,3 +128,5 @@
    (* 100 (get-from-hash "fcadb"))
    (* 10 (get-from-hash "cdfeb"))
    (get-from-hash "cdbaf"))
+
+(main-2 "input.txt")
