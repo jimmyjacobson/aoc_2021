@@ -18,9 +18,9 @@
         with turn
         with score
         do (setf turn (subseq moves 0 i))
-           (setf score (find-winner boards turn))
-           ;;(setf score (find-last-winner boards turn))
-        until (not (null score))
+           ;;(setf score (find-winner boards turn))
+           (setf score (find-last-winner boards turn))
+       ;; until (not (null score))
         finally (return score)))
 
 
@@ -60,6 +60,7 @@
 (defun calculate-board-score (board moves)
   ;;The sum of all board members not in moves
   ;;Multiplied by the last element of moves
+  (print board)
   (let ((total 0))
     (loop for i from 0 to 4
           do (loop for j from 0 to 4
